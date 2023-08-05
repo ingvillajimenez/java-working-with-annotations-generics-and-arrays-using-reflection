@@ -1,55 +1,43 @@
 package com.skillsoft.reflection;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class Main {
 
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException,
+            NoSuchMethodException {
 
         Class<?> employeeClass = Class.forName("com.skillsoft.reflection.Employee");
 
-        System.out.println("*************** Field annotations");
+        // NOTE: This accesses annotations that are "present" on an element
+        System.out.println("*********** @Required annotation using getAnnotation()");
 
-        Field[] fields = employeeClass.getDeclaredFields();
+        Annotation requiredClassAnnotation = employeeClass.getAnnotation(Required.class); // Annotation 'Required.class' is not retained for reflective access
+        Annotation requiredFieldAnnotation = employeeClass
+                .getDeclaredField("employeeId").getAnnotation(Required.class); // Annotation 'Required.class' is not retained for reflective access
+        Annotation requiredMethodAnnotation = employeeClass
+                .getDeclaredMethod("getEmployeeId").getAnnotation(Required.class); // Annotation 'Required.class' is not retained for reflective access
 
-        for (Field field : fields) {
-            Annotation[] annotations = field.getAnnotations();
-            if (annotations.length > 0) {
-                System.out.println("----------");
-                System.out.println(field.getName());
-                System.out.println("Annotations: " + Arrays.toString(annotations));
-            }
-            //----------
-            //department
-            //Annotations: [@java.lang.Deprecated(forRemoval=false, since="")]
-        }
+        System.out.println("Required class annotation: " + requiredClassAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
+        System.out.println("Required field annotation: " + requiredFieldAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
+        System.out.println("Required method annotation: " + requiredMethodAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
 
-        System.out.println("****************** Method annotations");
+        System.out.println();
 
-        Method[] methods = employeeClass.getDeclaredMethods();
+        // NOTE: This access annotations that are "directly present" on an element
+        System.out.println("********* @Required annotation using getDeclaredAnnotation()");
 
-        // NOTE: @Override and @SuppressWarnings annotations are not available at runtime
-        // The JVM does not have access to these annotations
-        for (Method method : methods) {
-            Annotation[] annotations = method.getAnnotations();
-            if (annotations.length > 0) {
-                System.out.println("-----------");
-                System.out.println(method.getName());
-                System.out.println("Annotations: " + Arrays.toString(annotations));
-            }
-            //-----------
-            //getDepartment
-            //Annotations: [@java.lang.Deprecated(forRemoval=false, since="")]
-            //-----------
-            //setDepartment
-            //Annotations: [@java.lang.Deprecated(forRemoval=true, since="v9")]
-            //-----------
-            //printEmployeeDetails
-            //Annotations: [@java.lang.Deprecated(forRemoval=false, since="")]
-        }
+        requiredClassAnnotation = employeeClass.getDeclaredAnnotation(Required.class);
+        requiredFieldAnnotation = employeeClass
+                .getDeclaredField("employeeId").getDeclaredAnnotation(Required.class);
+        requiredMethodAnnotation = employeeClass
+                .getDeclaredMethod("getEmployeeId").getDeclaredAnnotation(Required.class);
+
+        System.out.println("Required class annotation: " + requiredClassAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
+        System.out.println("Required field annotation: " + requiredFieldAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
+        System.out.println("Required method annotation: " + requiredMethodAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
+
+        System.out.println();
     }
 
 }
@@ -60,3 +48,7 @@ public class Main {
 // @SuppressWarnings() - retention policy of source
 // @Override - retention policy of source
 // @Deprecated - retention policy of runtime
+
+// https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html
+// https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html
+// Java Docs for Retention and Target policies

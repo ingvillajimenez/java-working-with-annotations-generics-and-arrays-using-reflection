@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Required
 public class Employee {
 
     private static final Random employeeIdGenerator = new Random();
 
+    @Required
     private final int employeeId;
     private String name;
     private String title;
@@ -23,6 +25,7 @@ public class Employee {
         this.salary = salary;
     }
 
+    @Required
     public int getEmployeeId() {
         return employeeId;
     }
