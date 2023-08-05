@@ -1,43 +1,66 @@
 package com.skillsoft.reflection;
 
-import java.lang.annotation.Annotation;
+import java.lang.annotation.Annotation; // interface Annotation
+import java.lang.reflect.Constructor; // class Constructor<T>
+import java.lang.reflect.Method; // class Method
 
 public class Main {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException,
+    private static void printParameterDetailsAndAnnotations(
+            Class<?>[] parameterTypes, Annotation[][] parameterAnnotations) {
+
+        int index = 0;
+        for (Class<?> parameterType : parameterTypes) {
+            System.out.println("----------------------");
+            System.out.println(parameterType);
+
+            Annotation[] parameterAnnotation = parameterAnnotations[index];
+            for (Annotation annotation : parameterAnnotation) {
+                System.out.println(annotation);
+            }
+            index++;
+        }
+
+        System.out.println();
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException,
             NoSuchMethodException {
 
         Class<?> employeeClass = Class.forName("com.skillsoft.reflection.Employee");
 
-        // NOTE: This accesses annotations that are "present" on an element
-        System.out.println("*********** @Required annotation using getAnnotation()");
+        System.out.println("************* Annotations on constructor parameters");
 
-        Annotation requiredClassAnnotation = employeeClass.getAnnotation(Required.class); // Annotation 'Required.class' is not retained for reflective access
-        Annotation requiredFieldAnnotation = employeeClass
-                .getDeclaredField("employeeId").getAnnotation(Required.class); // Annotation 'Required.class' is not retained for reflective access
-        Annotation requiredMethodAnnotation = employeeClass
-                .getDeclaredMethod("getEmployeeId").getAnnotation(Required.class); // Annotation 'Required.class' is not retained for reflective access
+        Constructor<?> constructor = employeeClass.getConstructor(String.class, String.class, double.class);
 
-        System.out.println("Required class annotation: " + requiredClassAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
-        System.out.println("Required field annotation: " + requiredFieldAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
-        System.out.println("Required method annotation: " + requiredMethodAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
+        Class<?>[] parameterTypes = constructor.getParameterTypes(); // array of class objects (parameters)
+        Annotation[][] parameterAnnotations = constructor.getParameterAnnotations(); // two dimensional array of annotations objects
 
-        System.out.println();
+        printParameterDetailsAndAnnotations(parameterTypes, parameterAnnotations);
+        //----------------------
+        //class java.lang.String
+        //@com.skillsoft.reflection.Required()
+        //----------------------
+        //class java.lang.String
+        //@com.skillsoft.reflection.Required()
+        //----------------------
+        //double
+        //@com.skillsoft.reflection.Required()
+        //@com.skillsoft.reflection.InRange(minValue=10000.0, maxValue=1000000.0)
 
-        // NOTE: This access annotations that are "directly present" on an element
-        System.out.println("********* @Required annotation using getDeclaredAnnotation()");
+        Method setNameMethod = employeeClass.getMethod("setName", String.class);
+        printParameterDetailsAndAnnotations(
+                setNameMethod.getParameterTypes(), setNameMethod.getParameterAnnotations());
+        //----------------------
+        //class java.lang.String
+        //@com.skillsoft.reflection.Required()
 
-        requiredClassAnnotation = employeeClass.getDeclaredAnnotation(Required.class);
-        requiredFieldAnnotation = employeeClass
-                .getDeclaredField("employeeId").getDeclaredAnnotation(Required.class);
-        requiredMethodAnnotation = employeeClass
-                .getDeclaredMethod("getEmployeeId").getDeclaredAnnotation(Required.class);
-
-        System.out.println("Required class annotation: " + requiredClassAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
-        System.out.println("Required field annotation: " + requiredFieldAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
-        System.out.println("Required method annotation: " + requiredMethodAnnotation); // null for retention policies: source and class, @com.skillsoft.reflection.Required() for retention policy: runtime
-
-        System.out.println();
+        Method setTitleMethod = employeeClass.getMethod("setTitle", String.class);
+        printParameterDetailsAndAnnotations(
+                setTitleMethod.getParameterTypes(), setTitleMethod.getParameterAnnotations());
+        //----------------------
+        //class java.lang.String
+        //@com.skillsoft.reflection.Required()
     }
 
 }

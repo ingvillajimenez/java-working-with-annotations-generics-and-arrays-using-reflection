@@ -18,7 +18,8 @@ public class Employee {
     @Deprecated
     private String department = "Unknown";
 
-    public Employee(String name, String title, double salary) {
+    public Employee(@Required String name, @Required String title,
+                    @Required @InRange(minValue = 10000, maxValue = 1000000) double salary) {
         this.employeeId = Math.abs(employeeIdGenerator.nextInt());
         this.name = name;
         this.title = title;
@@ -34,7 +35,7 @@ public class Employee {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@Required String name) {
         this.name = name;
     }
 
@@ -42,7 +43,7 @@ public class Employee {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(@Required String title) {
         this.title = title;
     }
 
@@ -50,7 +51,7 @@ public class Employee {
         return salary;
     }
 
-    public void setSalary(double salary) {
+    public void setSalary(@Required @InRange(minValue = 10000, maxValue = 1000000) double salary) {
         this.salary = salary;
     }
 
