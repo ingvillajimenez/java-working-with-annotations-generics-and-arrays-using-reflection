@@ -1,66 +1,76 @@
 package com.skillsoft.reflection;
 
 import java.lang.annotation.Annotation; // interface Annotation
-import java.lang.reflect.Constructor; // class Constructor<T>
-import java.lang.reflect.Method; // class Method
+import java.lang.reflect.Field; // Class
 
 public class Main {
 
-    private static void printParameterDetailsAndAnnotations(
-            Class<?>[] parameterTypes, Annotation[][] parameterAnnotations) {
+    private static void checkEmployeeObjectForValidity(Employee employee)
+            throws IllegalAccessException {
 
-        int index = 0;
-        for (Class<?> parameterType : parameterTypes) {
-            System.out.println("----------------------");
-            System.out.println(parameterType);
+        boolean valid = true;
+        Field[] fields = employee.getClass().getDeclaredFields();
 
-            Annotation[] parameterAnnotation = parameterAnnotations[index];
-            for (Annotation annotation : parameterAnnotation) {
-                System.out.println(annotation);
+        for (Field field : fields) {
+            Annotation[] annotations = field.getAnnotations();
+
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof Required) {
+                    field.setAccessible(true);
+
+                    if (field.get(employee) == null) {
+                        valid = false;
+                        System.out.println("** Field is null: " + field.getName());
+                    }
+                }
+
+                if (annotation instanceof InRange) {
+                    InRange inRange = (InRange) annotation;
+
+                    double value = field.getDouble(employee);
+
+                    if (value < inRange.minValue() || value > inRange.maxValue()) {
+                        valid = false;
+                        System.out.println(String.format("** Field is not in range: %s (%.1f %.1f)",
+                                field.getName(), inRange.minValue(), inRange.maxValue()));
+                    }
+                }
             }
-            index++;
         }
 
-        System.out.println();
+        if (valid) {
+            System.out.println("All fields are valid! " + employee);
+        } else {
+            System.out.println("Please fix issues with invalid fields " + employee);
+        }
+
     }
 
-    public static void main(String[] args) throws ClassNotFoundException,
-            NoSuchMethodException {
+    public static void main(String[] args) throws IllegalAccessException {
 
-        Class<?> employeeClass = Class.forName("com.skillsoft.reflection.Employee");
+        System.out.println("************* object is valid");
+        Employee employee = new Employee("John", "VP", 112000);
+        checkEmployeeObjectForValidity(employee);
+        // All fields are valid! ID: 1566738542, Name: John, Title: VP, Salary: 112000.0
 
-        System.out.println("************* Annotations on constructor parameters");
+        System.out.println("*********** object is invalid");
+        employee = new Employee("Jill", null, 112000);
+        checkEmployeeObjectForValidity(employee);
+        //** Field is null: title
+        //Please fix issues with invalid fields ID: 1519452568, Name: Jill, Title: null, Salary: 112000.0
 
-        Constructor<?> constructor = employeeClass.getConstructor(String.class, String.class, double.class);
+        System.out.println("************* objedct is invalid");
+        employee = new Employee(null, null, 112000);
+        checkEmployeeObjectForValidity(employee);
+        //** Field is null: name
+        //** Field is null: title
+        //Please fix issues with invalid fields ID: 989137496, Name: null, Title: null, Salary: 112000.0
 
-        Class<?>[] parameterTypes = constructor.getParameterTypes(); // array of class objects (parameters)
-        Annotation[][] parameterAnnotations = constructor.getParameterAnnotations(); // two dimensional array of annotations objects
-
-        printParameterDetailsAndAnnotations(parameterTypes, parameterAnnotations);
-        //----------------------
-        //class java.lang.String
-        //@com.skillsoft.reflection.Required()
-        //----------------------
-        //class java.lang.String
-        //@com.skillsoft.reflection.Required()
-        //----------------------
-        //double
-        //@com.skillsoft.reflection.Required()
-        //@com.skillsoft.reflection.InRange(minValue=10000.0, maxValue=1000000.0)
-
-        Method setNameMethod = employeeClass.getMethod("setName", String.class);
-        printParameterDetailsAndAnnotations(
-                setNameMethod.getParameterTypes(), setNameMethod.getParameterAnnotations());
-        //----------------------
-        //class java.lang.String
-        //@com.skillsoft.reflection.Required()
-
-        Method setTitleMethod = employeeClass.getMethod("setTitle", String.class);
-        printParameterDetailsAndAnnotations(
-                setTitleMethod.getParameterTypes(), setTitleMethod.getParameterAnnotations());
-        //----------------------
-        //class java.lang.String
-        //@com.skillsoft.reflection.Required()
+        System.out.println("*********** object is invalid");
+        employee = new Employee("Nick", "Manager", 5000);
+        checkEmployeeObjectForValidity(employee);
+        //** Field is not in range: salary (10000.0 1000000.0)
+        //Please fix issues with invalid fields ID: 440619892, Name: Nick, Title: Manager, Salary: 5000.0
     }
 
 }
