@@ -5,67 +5,68 @@ import java.util.Arrays; // class Arrays
 
 public class Main {
 
-    public static void main(String[] args) {
-
-        System.out.println("******* creating arrays");
-
+    public static void main(String[] args) throws ClassNotFoundException {
         int[] intArray = (int[]) Array.newInstance(int.class, 3);
         String[] stringArray = (String[]) Array.newInstance(String.class, 3);
+
+        System.out.println("***** Class");
 
         System.out.println(intArray.getClass()); // class [I
         System.out.println(stringArray.getClass()); // class [Ljava.lang.String;
 
         System.out.println();
 
-        System.out.println("***** set and get on int array");
+        System.out.println("***** IsArray");
 
-        Array.set(intArray, 0, 10);
-        Array.set(intArray, 1, 20);
-        Array.set(intArray, 2, 30);
-
-        System.out.println(Arrays.toString(intArray)); // [10, 20, 30]
-
-        System.out.println("Element at index 2: " + Array.get(intArray, 2)); // 30
-        System.out.println("Element at index 1: " + Array.get(intArray, 1)); // 20
-        System.out.println("Element at index 0: " + Array.get(intArray, 0)); // 10
+        System.out.println("intArray: " + intArray.getClass().isArray()); // true
+        System.out.println("stringArray: " + stringArray.getClass().isArray()); // true
 
         System.out.println();
 
-        System.out.println("***** set and get on string array");
-
-        Array.set(stringArray, 0, "Jason");
-        Array.set(stringArray, 1, "Julie");
-        Array.set(stringArray, 2, "Jonas");
-
-        System.out.println(Arrays.toString(stringArray)); // [Jason, Julie, Jonas]
-
-        System.out.println("Element at index 2: " + Array.get(stringArray, 2)); // Jonas
-        System.out.println("Element at index 1: " + Array.get(stringArray, 1)); // Julie
-        System.out.println("Element at index 0: " + Array.get(stringArray, 0)); // Jason
+        System.out.println("intArray: " + intArray.getClass().getComponentType()); // int
+        System.out.println("stringArray: " + stringArray.getClass().getComponentType()); // class java.lang.String
 
         System.out.println();
-
-//        System.out.println("************* primitive types");
 //
-//        int[] intArray = new int[] {10, 20, 30};
-//        float[] floatArray = new float[] {10.1f, 20.2f, 30.3f};
-//        boolean[] booleanArray = new boolean[] {true, false, true};
+//        System.out.println("***** creating multi-dimensional int arrays");
 //
-//        System.out.println(intArray.getClass()); // class [I
-//        System.out.println(floatArray.getClass()); // class [F
-//        System.out.println(booleanArray.getClass()); // class [Z
+//        Class<?> intArrayClass = Class.forName("[I");
+//
+//        System.out.println(intArrayClass); // class [I
+//
+//        int[][] intArray = (int[][]) Array.newInstance(intArrayClass, 3);
+//
+//        Array.set(intArray, 0, new int[] {123});
+//        Array.set(intArray, 1, new int[] {456});
+//        Array.set(intArray, 2, new int[] {789});
+//
+//        for (int[] oneArray : intArray) {
+//            System.out.println(Arrays.toString(oneArray));
+//            //[123]
+//            //[456]
+//            //[789]
+//        }
 //
 //        System.out.println();
 //
-//        System.out.println("*********** objects");
+//        System.out.println("***** creating multi-dimensional string arrays");
 //
-//        Integer[] integerArray = new Integer[] {10, 20, 30};
-//        Double[] doubleArray = new Double[] {10.1, 20.2, 30.3};
-//        String[] stringArray = new String[] {"Alice", "Bob", "Charlie"};
+//        Class<?> stringArrayClass = Class.forName("[Ljava.lang.String;");
 //
-//        System.out.println(integerArray.getClass()); // class [Ljava.lang.Integer;
-//        System.out.println(doubleArray.getClass()); // class [Ljava.lang.Double;
-//        System.out.println(stringArray.getClass()); // class [Ljava.lang.String;
+//        System.out.println(stringArrayClass); // class [Ljava.lang.String;
+//
+//        String[][] stringArray = (String[][]) Array.newInstance(stringArrayClass, 3);
+//
+//        Array.set(stringArray, 0, new String[] {"Alice"});
+//        Array.set(stringArray, 1, new String[] {"Bob"});
+//        Array.set(stringArray, 2, new String[] {"Charlie"});
+//
+//        for (String[] oneArray : stringArray) {
+//            System.out.println(Arrays.toString(oneArray));
+//            //[Alice]
+//            //[Bob]
+//            //[Charlie]
+//        }
 //
 //        System.out.println();
     }
