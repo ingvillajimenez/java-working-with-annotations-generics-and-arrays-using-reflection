@@ -1,62 +1,59 @@
 package com.skillsoft.reflection;
 
+import java.lang.reflect.Field; // class Field
+import java.lang.reflect.Method; // class Method
+import java.lang.reflect.ParameterizedType; // interface ParameterizedType extends Type
+import java.lang.reflect.Type; // interface Type
+import java.util.Arrays; // class Arrays
+
 public class Main {
 
-    public static void main(String[] args) {
+    private static void printParameterizedTypeDetails(ParameterizedType parameterizedType) {
+        Type[] typeArguments = parameterizedType.getActualTypeArguments();
 
-        // NOTE: You cannot tell what type your object has been parameterized to
-        // You can tell that this is a parameterized instance, but you cannot tell
-        // the type of parameter
-        System.out.println("****************** Parameterizable class");
+        for (Type typeArgument : typeArguments) {
+            System.out.println("Type: " + typeArgument);
+        }
+    }
+
+    public static void main(String[] args) throws NoSuchMethodException, NoSuchFieldException {
 
         Container<String> container = new Container<>("Hello");
+        ContainerWrapper containerWrapper = new ContainerWrapper(container); // Raw use of parameterized class 'ContainerWrapper'
+//        ContainerWrapper<String> containerWrapper = new ContainerWrapper<>(container);
 
-        Class<?> containerClass = container.getClass();
+        System.out.println("************ Parameterized return type");
+        Method getContainerMethod = containerWrapper.getClass().getMethod("getContainer");
 
-        System.out.println("Container class: " + containerClass); // class com.skillsoft.reflection.Container
-        System.out.println("Container class (generic string): " +
-                containerClass.toGenericString()); // public class com.skillsoft.reflection.Container<T>
-        System.out.println("Container class (superclass): " +
-                containerClass.getSuperclass()); // class java.lang.Object
-        System.out.println("Container class (generic superclass): " +
-                containerClass.getGenericSuperclass()); // class java.lang.Object
+        System.out.println("getContainer() return type: " + getContainerMethod.getReturnType()); // class com.skillsoft.reflection.Container
+        System.out.println("getContainer() generic return type: " + getContainerMethod.getGenericReturnType()); // com.skillsoft.reflection.Container<T>
+
+        printParameterizedTypeDetails((ParameterizedType) getContainerMethod.getGenericReturnType()); // T
 
         System.out.println();
 
-        // NOTE: In this derived class, we can tell what type parameter we used to
-        // define this class when we inherited from the base class.
-        Container<Integer> integerContainer = new IntegerContainer(123);
+        System.out.println("************* Parameterized input parameters");
 
-        System.out.println("************* Non-parameterizable derived class (integer)");
+        Method setContainerMethod = containerWrapper.getClass().getMethod("setContainer", Container.class);
 
-        Class<?> integerContainerClass = integerContainer.getClass();
+        System.out.println("setContainer(Container) parameter type: " +
+                Arrays.toString(setContainerMethod.getParameterTypes())); // [class com.skillsoft.reflection.Container]
+        System.out.println("setContainer(Container) generic parameter type: " +
+                Arrays.toString(setContainerMethod.getGenericParameterTypes())); // [com.skillsoft.reflection.Container<T>]
 
-        System.out.println("IntegerContainer class: " + integerContainerClass); // class com.skillsoft.reflection.IntegerContainer
-        System.out.println("IntegerContainer class (generic string): " +
-                integerContainerClass.toGenericString()); // public class com.skillsoft.reflection.IntegerContainer
-        System.out.println("IntegerContainer class (superclass): " +
-                integerContainerClass.getSuperclass()); // class com.skillsoft.reflection.Container
-        System.out.println("IntegerContainer class (generic superclass): " +
-                integerContainerClass.getGenericSuperclass()); // com.skillsoft.reflection.Container<java.lang.Integer>
-                // no information was lost
+        printParameterizedTypeDetails((ParameterizedType) (setContainerMethod.getGenericParameterTypes()[0])); // T
+
         System.out.println();
 
-        // NOTE: In this derived class, we can tell what type parameter we used to
-        // define this class when we inherited from the base class.
-        Container<String> stringContainer = new StringContainer("Hello");
+        System.out.println("************* Parameterized field");
 
-        System.out.println("************** Non-parameterizable derived class (string)");
+        Field containerField = containerWrapper.getClass().getDeclaredField("container");
 
-        Class<?> stringContainerClass = stringContainer.getClass();
+        System.out.println("container field type: " + containerField.getType()); // class com.skillsoft.reflection.Container
+        System.out.println("container field generic type: " + containerField.getGenericType()); // com.skillsoft.reflection.Container<T>
 
-        System.out.println("StringContainer class: " + stringContainerClass); // class com.skillsoft.reflection.StringContainer
-        System.out.println("StringContainer class (generic string): " +
-                stringContainerClass.toGenericString()); // // public class com.skillsoft.reflection.StringContainer
-        System.out.println("StringContainer class (superclass): " +
-                stringContainerClass.getSuperclass()); // class com.skillsoft.reflection.Container
-        System.out.println("StringContainer class (generic superclass): " +
-                stringContainerClass.getGenericSuperclass()); // com.skillsoft.reflection.Container<java.lang.String>
-                // type parameter of the superclass is java.lang.String
+        printParameterizedTypeDetails((ParameterizedType) (containerField.getGenericType())); // T
+
         System.out.println();
     }
 
@@ -72,3 +69,5 @@ public class Main {
 // https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html
 // https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html
 // Java Docs for Retention and Target policies
+
+// generics and reflection don't mix very well. They aren't very reliable when used together
