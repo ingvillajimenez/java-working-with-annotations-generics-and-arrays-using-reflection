@@ -1,76 +1,63 @@
 package com.skillsoft.reflection;
 
-import java.lang.annotation.Annotation; // interface Annotation
-import java.lang.reflect.Field; // Class
-
 public class Main {
 
-    private static void checkEmployeeObjectForValidity(Employee employee)
-            throws IllegalAccessException {
+    public static void main(String[] args) {
 
-        boolean valid = true;
-        Field[] fields = employee.getClass().getDeclaredFields();
+        // NOTE: You cannot tell what type your object has been parameterized to
+        // You can tell that this is a parameterized instance, but you cannot tell
+        // the type of parameter
+        System.out.println("****************** Parameterizable class");
 
-        for (Field field : fields) {
-            Annotation[] annotations = field.getAnnotations();
+        Container<String> container = new Container<>("Hello");
 
-            for (Annotation annotation : annotations) {
-                if (annotation instanceof Required) {
-                    field.setAccessible(true);
+        Class<?> containerClass = container.getClass();
 
-                    if (field.get(employee) == null) {
-                        valid = false;
-                        System.out.println("** Field is null: " + field.getName());
-                    }
-                }
+        System.out.println("Container class: " + containerClass); // class com.skillsoft.reflection.Container
+        System.out.println("Container class (generic string): " +
+                containerClass.toGenericString()); // public class com.skillsoft.reflection.Container<T>
+        System.out.println("Container class (superclass): " +
+                containerClass.getSuperclass()); // class java.lang.Object
+        System.out.println("Container class (generic superclass): " +
+                containerClass.getGenericSuperclass()); // class java.lang.Object
 
-                if (annotation instanceof InRange) {
-                    InRange inRange = (InRange) annotation;
+        System.out.println();
 
-                    double value = field.getDouble(employee);
+        // NOTE: In this derived class, we can tell what type parameter we used to
+        // define this class when we inherited from the base class.
+        Container<Integer> integerContainer = new IntegerContainer(123);
 
-                    if (value < inRange.minValue() || value > inRange.maxValue()) {
-                        valid = false;
-                        System.out.println(String.format("** Field is not in range: %s (%.1f %.1f)",
-                                field.getName(), inRange.minValue(), inRange.maxValue()));
-                    }
-                }
-            }
-        }
+        System.out.println("************* Non-parameterizable derived class (integer)");
 
-        if (valid) {
-            System.out.println("All fields are valid! " + employee);
-        } else {
-            System.out.println("Please fix issues with invalid fields " + employee);
-        }
+        Class<?> integerContainerClass = integerContainer.getClass();
 
-    }
+        System.out.println("IntegerContainer class: " + integerContainerClass); // class com.skillsoft.reflection.IntegerContainer
+        System.out.println("IntegerContainer class (generic string): " +
+                integerContainerClass.toGenericString()); // public class com.skillsoft.reflection.IntegerContainer
+        System.out.println("IntegerContainer class (superclass): " +
+                integerContainerClass.getSuperclass()); // class com.skillsoft.reflection.Container
+        System.out.println("IntegerContainer class (generic superclass): " +
+                integerContainerClass.getGenericSuperclass()); // com.skillsoft.reflection.Container<java.lang.Integer>
+                // no information was lost
+        System.out.println();
 
-    public static void main(String[] args) throws IllegalAccessException {
+        // NOTE: In this derived class, we can tell what type parameter we used to
+        // define this class when we inherited from the base class.
+        Container<String> stringContainer = new StringContainer("Hello");
 
-        System.out.println("************* object is valid");
-        Employee employee = new Employee("John", "VP", 112000);
-        checkEmployeeObjectForValidity(employee);
-        // All fields are valid! ID: 1566738542, Name: John, Title: VP, Salary: 112000.0
+        System.out.println("************** Non-parameterizable derived class (string)");
 
-        System.out.println("*********** object is invalid");
-        employee = new Employee("Jill", null, 112000);
-        checkEmployeeObjectForValidity(employee);
-        //** Field is null: title
-        //Please fix issues with invalid fields ID: 1519452568, Name: Jill, Title: null, Salary: 112000.0
+        Class<?> stringContainerClass = stringContainer.getClass();
 
-        System.out.println("************* objedct is invalid");
-        employee = new Employee(null, null, 112000);
-        checkEmployeeObjectForValidity(employee);
-        //** Field is null: name
-        //** Field is null: title
-        //Please fix issues with invalid fields ID: 989137496, Name: null, Title: null, Salary: 112000.0
-
-        System.out.println("*********** object is invalid");
-        employee = new Employee("Nick", "Manager", 5000);
-        checkEmployeeObjectForValidity(employee);
-        //** Field is not in range: salary (10000.0 1000000.0)
-        //Please fix issues with invalid fields ID: 440619892, Name: Nick, Title: Manager, Salary: 5000.0
+        System.out.println("StringContainer class: " + stringContainerClass); // class com.skillsoft.reflection.StringContainer
+        System.out.println("StringContainer class (generic string): " +
+                stringContainerClass.toGenericString()); // // public class com.skillsoft.reflection.StringContainer
+        System.out.println("StringContainer class (superclass): " +
+                stringContainerClass.getSuperclass()); // class com.skillsoft.reflection.Container
+        System.out.println("StringContainer class (generic superclass): " +
+                stringContainerClass.getGenericSuperclass()); // com.skillsoft.reflection.Container<java.lang.String>
+                // type parameter of the superclass is java.lang.String
+        System.out.println();
     }
 
 }
