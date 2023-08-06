@@ -1,60 +1,73 @@
 package com.skillsoft.reflection;
 
-import java.lang.reflect.Field; // class Field
-import java.lang.reflect.Method; // class Method
-import java.lang.reflect.ParameterizedType; // interface ParameterizedType extends Type
-import java.lang.reflect.Type; // interface Type
+import java.lang.reflect.Array; // class Array
 import java.util.Arrays; // class Arrays
 
 public class Main {
 
-    private static void printParameterizedTypeDetails(ParameterizedType parameterizedType) {
-        Type[] typeArguments = parameterizedType.getActualTypeArguments();
+    public static void main(String[] args) {
 
-        for (Type typeArgument : typeArguments) {
-            System.out.println("Type: " + typeArgument);
-        }
-    }
+        System.out.println("******* creating arrays");
 
-    public static void main(String[] args) throws NoSuchMethodException, NoSuchFieldException {
+        int[] intArray = (int[]) Array.newInstance(int.class, 3);
+        String[] stringArray = (String[]) Array.newInstance(String.class, 3);
 
-        Container<String> container = new Container<>("Hello");
-        ContainerWrapper containerWrapper = new ContainerWrapper(container); // Raw use of parameterized class 'ContainerWrapper'
-//        ContainerWrapper<String> containerWrapper = new ContainerWrapper<>(container);
-
-        System.out.println("************ Parameterized return type");
-        Method getContainerMethod = containerWrapper.getClass().getMethod("getContainer");
-
-        System.out.println("getContainer() return type: " + getContainerMethod.getReturnType()); // class com.skillsoft.reflection.Container
-        System.out.println("getContainer() generic return type: " + getContainerMethod.getGenericReturnType()); // com.skillsoft.reflection.Container<T>
-
-        printParameterizedTypeDetails((ParameterizedType) getContainerMethod.getGenericReturnType()); // T
+        System.out.println(intArray.getClass()); // class [I
+        System.out.println(stringArray.getClass()); // class [Ljava.lang.String;
 
         System.out.println();
 
-        System.out.println("************* Parameterized input parameters");
+        System.out.println("***** set and get on int array");
 
-        Method setContainerMethod = containerWrapper.getClass().getMethod("setContainer", Container.class);
+        Array.set(intArray, 0, 10);
+        Array.set(intArray, 1, 20);
+        Array.set(intArray, 2, 30);
 
-        System.out.println("setContainer(Container) parameter type: " +
-                Arrays.toString(setContainerMethod.getParameterTypes())); // [class com.skillsoft.reflection.Container]
-        System.out.println("setContainer(Container) generic parameter type: " +
-                Arrays.toString(setContainerMethod.getGenericParameterTypes())); // [com.skillsoft.reflection.Container<T>]
+        System.out.println(Arrays.toString(intArray)); // [10, 20, 30]
 
-        printParameterizedTypeDetails((ParameterizedType) (setContainerMethod.getGenericParameterTypes()[0])); // T
+        System.out.println("Element at index 2: " + Array.get(intArray, 2)); // 30
+        System.out.println("Element at index 1: " + Array.get(intArray, 1)); // 20
+        System.out.println("Element at index 0: " + Array.get(intArray, 0)); // 10
+
+        System.out.println();
+
+        System.out.println("***** set and get on string array");
+
+        Array.set(stringArray, 0, "Jason");
+        Array.set(stringArray, 1, "Julie");
+        Array.set(stringArray, 2, "Jonas");
+
+        System.out.println(Arrays.toString(stringArray)); // [Jason, Julie, Jonas]
+
+        System.out.println("Element at index 2: " + Array.get(stringArray, 2)); // Jonas
+        System.out.println("Element at index 1: " + Array.get(stringArray, 1)); // Julie
+        System.out.println("Element at index 0: " + Array.get(stringArray, 0)); // Jason
 
         System.out.println();
 
-        System.out.println("************* Parameterized field");
-
-        Field containerField = containerWrapper.getClass().getDeclaredField("container");
-
-        System.out.println("container field type: " + containerField.getType()); // class com.skillsoft.reflection.Container
-        System.out.println("container field generic type: " + containerField.getGenericType()); // com.skillsoft.reflection.Container<T>
-
-        printParameterizedTypeDetails((ParameterizedType) (containerField.getGenericType())); // T
-
-        System.out.println();
+//        System.out.println("************* primitive types");
+//
+//        int[] intArray = new int[] {10, 20, 30};
+//        float[] floatArray = new float[] {10.1f, 20.2f, 30.3f};
+//        boolean[] booleanArray = new boolean[] {true, false, true};
+//
+//        System.out.println(intArray.getClass()); // class [I
+//        System.out.println(floatArray.getClass()); // class [F
+//        System.out.println(booleanArray.getClass()); // class [Z
+//
+//        System.out.println();
+//
+//        System.out.println("*********** objects");
+//
+//        Integer[] integerArray = new Integer[] {10, 20, 30};
+//        Double[] doubleArray = new Double[] {10.1, 20.2, 30.3};
+//        String[] stringArray = new String[] {"Alice", "Bob", "Charlie"};
+//
+//        System.out.println(integerArray.getClass()); // class [Ljava.lang.Integer;
+//        System.out.println(doubleArray.getClass()); // class [Ljava.lang.Double;
+//        System.out.println(stringArray.getClass()); // class [Ljava.lang.String;
+//
+//        System.out.println();
     }
 
 }
